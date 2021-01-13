@@ -1,3 +1,15 @@
 
 WellElevations.xlsx
 WellElevationSubset.xlsx
+Test.xlsx
+test.geojson
+*.shx
+*.shp
+*.prj
+test.json/test.dbf
+test.json/test.cpg
+WellElevations4hour.xlsx
+*.csv
+*.geojson
+*.dbf
+*.cpg
