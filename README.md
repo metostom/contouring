@@ -1,6 +1,6 @@
 ## Contouring
 
-Contouring time-series Pressure Transducer data and conversion to a web uploadable format for visualization in Kepler.gl
+Contouring flat-file time-series Pressure Transducer data and conversion to a web uploadable format for visualization in Kepler.gl
  
 
 ## Uses
