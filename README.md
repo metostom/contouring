@@ -12,7 +12,7 @@ Contouring time-series Pressure Transducer data and conversion to a web uploadab
 - Matplotlib
 
 
-## Usage
+##Usage
 ```
 from Contour import ContourData
 
@@ -33,8 +33,8 @@ cd.reproject()
 cd.toGeoJSON("test.json")
 ```
 
-# Output Examples
-Full year of Contours
+## In Kepler.gl
+
 ![Alt Text](Full-Year.gif)
 
 
