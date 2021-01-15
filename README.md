@@ -10,6 +10,7 @@ Contouring flat-file time-series Pressure Transducer data and conversion to a we
 - Shapely
 - Numpy
 - Matplotlib
+- Scipy
 
 
 ## Usage
@@ -17,12 +18,14 @@ Contouring flat-file time-series Pressure Transducer data and conversion to a we
 from Contour import ContourData
 
 cd = ContourData(
-        'WellElevationSubset.xlsx',
-        'X',
-        'Y',
-        "Water Elevation(ft NAVD88)",
-        "DateTimeRounded",
-        2926
+        filepath = 'WellElevationSubsetSmaller.xlsx',
+        xcol = 'X',
+        ycol = 'Y',
+        zcol = "Water Elevation(ft NAVD88)",
+        tcol = "DateTimeRounded",
+        crs = 2926,
+        method = 'linear',
+        steps = 50
 )
 
 cd.subsetData()
@@ -32,6 +35,9 @@ cd.mergeGeometry()
 cd.reproject()
 cd.toGeoJSON("test.json")
 ```
+## Output Looks like
+
+![Alt Text](contourmpl.png)
 
 ## In Kepler.gl
 
