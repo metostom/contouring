@@ -14,3 +14,7 @@ WellElevations4hour.xlsx
 *.dbf
 *.cpg
 *.xlsx
+.ipynb_checkpoints/
+.vscode/
+Contours4hour/
+test.json/
