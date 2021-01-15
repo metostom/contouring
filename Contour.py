@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 from shapely import geometry as geo
 import numpy as np
-
+from scipy.interpolate import griddata
 
 class ContourData():
 
@@ -25,10 +25,18 @@ class ContourData():
     crs : int
         coordinate reference system of x,y coordinate data  - EPSG code
             ex. WGS84 - Lat/Long = 4326 
-            
+     method : str
+        surface interpolation/creation method:
+            - cubic (default)
+            - linear
+            - triangulation        
+    steps : int
+        surface interpolation grid resolution in crs units 
+            - 2 (default)    
+
     """
 
-    def __init__(self,filepath,xcol,ycol,zcol,tcol,crs):
+    def __init__(self,filepath,xcol,ycol,zcol,tcol,crs,method='cubic',steps=2):
         
         self.filePath = filepath
         self.xcol = xcol
@@ -37,6 +45,8 @@ class ContourData():
         self.tcol = tcol
         self.crs = crs
         self.data = pd.read_excel(filepath)
+        self.method = method
+        self.steps = steps
 
     def subsetData(self):
         '''
@@ -62,6 +72,57 @@ class ContourData():
                         )
         self.dfTimes = self.dfTimes.T
         self.dfTimes.columns = ['DateTime','DataFrames']
+    
+    def interpSurface(self,steps=2,method='cubic'):
+        '''
+        Interpolates a surface from the sparse points
+
+            Parameters:
+                    type (str) : interpolation method, options include:
+                                - linear
+                                - cubic
+
+            Returns:
+                    self.dfSurfaces (dataframe):
+                    Pandas dataframe of the form
+                    DateTime | Surface
+                        DateTime (dt) : datetime of the contours
+                        Surface (dataframe) : dataframe of x,y,z coordinates at DateTime
+        '''
+
+        surfaces = []
+        
+        for index, row in self.dfTimes.iterrows():
+            
+            x = row['DataFrames'][self.xcol].values
+            y = row['DataFrames'][self.ycol].values
+            z = row['DataFrames'][self.zcol].values
+
+            points = np.array([x,y]).T
+            xmin = x.min()
+            xmax = x.max()
+            ymin = y.min()
+            ymax = y.max()
+            grid_x, grid_y = np.meshgrid(np.arange(xmin,xmax,steps), np.arange(ymin,ymax,steps))
+            grid_z = griddata(points, z, (grid_x, grid_y), method=method)
+
+            # remove non-finite values (not interpolated)
+            mask = np.isfinite(grid_z.flatten())
+
+            gfx = grid_x.flatten()
+            gfy = grid_y.flatten()
+            gfz = grid_z.flatten()
+
+            grid_xn = gfx[mask]
+            grid_yn = gfy[mask]
+            grid_zn = gfz[mask]
+            xyz = pd.DataFrame([grid_xn,grid_yn,grid_zn])
+            xyz = xyz.T
+            xyz.columns = [self.xcol,self.ycol,self.zcol]
+            surfaces.append(xyz)
+
+        self.dfTimes['Surfaces'] = surfaces
+            
         
     def contourIntervals(self,zvalues,delta=0.25):
         '''
@@ -98,14 +159,22 @@ class ContourData():
                         DataFrame (dataframe) : DataFrame of orginal data at DateTime
                         Contours (cs obj) : matplotlib collection of the computer contours at DateTime
         '''
-        
+
+        if self.method in ['cubic','linear']:
+
+            self.interpSurface(steps= self.steps, method=self.method)
+            col = 'Surfaces'
+
+        else:
+            col = 'DataFrames'
+
         csc = []
         
         for index, row in self.dfTimes.iterrows():
             
-            x = row['DataFrames'][self.xcol].values
-            y = row['DataFrames'][self.ycol].values
-            z = row['DataFrames'][self.zcol].values
+            x = row[col][self.xcol].values
+            y = row[col][self.ycol].values
+            z = row[col][self.zcol].values
             
             if interval != None:
                 vals = self.contourIntervals(z,interval)
