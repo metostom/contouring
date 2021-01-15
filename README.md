@@ -39,7 +39,7 @@ cd.toGeoJSON("test.json")
 
 ![Alt Text](contourmpl.png)
 
-## In Kepler.gl
+## Animated In Kepler.gl
 
 ![Alt Text](Full-Year.gif)
 
