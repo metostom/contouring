@@ -19,6 +19,18 @@ Contouring flat-file time-series Pressure Transducer data and conversion to a we
 
 
 ## Usage
+
+<b> Input Data File </b>
+
+Accepts Excel flat file format where one row corresponds to one groundwater elevation at one DateTime of the form:
+
+| Location | DateTime        | X      | Y      | Z    |
+|----------|-----------------|--------|--------|------|
+| MW-1     | 2020-12-03 9:00 | 123453 | 435679 | 17.5 |
+| ...      | ...             | ...    | ...    | ...  |
+
+
+<b> Code Sample </b>
 ```
 from Contour import ContourData
 
