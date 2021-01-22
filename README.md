@@ -8,7 +8,7 @@ Contouring flat-file time-series Pressure Transducer data and conversion to a we
    - linear
  - Triangulation subdivision
  - Gaussian Process Regression (Kringing)
-  - (White Kernel + Dot Product Kernel)
+   - (White Kernel + Dot Product Kernel)
 
 ## Uses
 <b> Python </b>
