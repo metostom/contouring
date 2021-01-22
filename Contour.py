@@ -6,6 +6,8 @@ import matplotlib.tri as tri
 from shapely import geometry as geo
 import numpy as np
 from scipy.interpolate import griddata
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
 
 class ContourData():
 
@@ -73,7 +75,62 @@ class ContourData():
         self.dfTimes = self.dfTimes.T
         self.dfTimes.columns = ['DateTime','DataFrames']
     
-    def interpSurface(self,steps=2,method='cubic'):
+    def gprSurface(self,steps=10):
+        '''
+            Gaussian Process Reducer (Kringing) Interpolation of input x,y,z
+
+            Parameters:
+                    type (str) : interpolation method, options include:
+                    
+            Returns:
+                    self.dfSurfaces (dataframe):
+                    Pandas dataframe of the form
+                    DateTime | Surface
+                        DateTime (dt) : datetime of the contours
+                        Surface (dataframe) : dataframe of x,y,z coordinates at DateTime
+
+        '''
+        surfaces = []
+        
+        for index, row in self.dfTimes.iterrows():
+            
+            x = row['DataFrames'][self.xcol].values
+            y = row['DataFrames'][self.ycol].values
+            z = row['DataFrames'][self.zcol].values
+
+            X = np.array([x,y]).T
+            xmin = x.min()
+            xmax = x.max()
+            ymin = y.min()
+            ymax = y.max()
+            grid_x, grid_y = np.meshgrid(np.arange(xmin,xmax,steps), np.arange(ymin,ymax,steps))
+            gfx = grid_x.flatten()
+            gfy = grid_y.flatten()
+            grid = np.array([gfx,gfy]).T
+
+            # fit/predict GPR 
+            kernel = DotProduct() + WhiteKernel(noise_level=3.0)
+            gpr = GaussianProcessRegressor(kernel=kernel,
+                    random_state=0).fit(X, z)
+            
+            gfz = gpr.predict(grid)
+
+            # remove non-finite values 
+            mask = np.isfinite(gfz.flatten())
+
+            grid_xn = gfx[mask]
+            grid_yn = gfy[mask]
+            grid_zn = gfz[mask]
+            xyz = pd.DataFrame([grid_xn,grid_yn,grid_zn])
+            xyz = xyz.T
+            xyz.columns = [self.xcol,self.ycol,self.zcol]
+            surfaces.append(xyz)
+
+        self.dfTimes['Surfaces'] = surfaces
+            
+
+    
+    def interpSurface(self,steps=10,method='cubic'):
         '''
         Interpolates a surface from the sparse points
 
@@ -163,6 +220,11 @@ class ContourData():
         if self.method in ['cubic','linear']:
 
             self.interpSurface(steps= self.steps, method=self.method)
+            col = 'Surfaces'
+
+        elif self.method in ['gpr']:
+            
+            self.gprSurface(steps=self.steps)
             col = 'Surfaces'
 
         else:
