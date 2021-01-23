@@ -18,7 +18,7 @@ Contouring flat-file time-series Pressure Transducer data and conversion to a we
 - Numpy
 - Matplotlib
 - Scipy
--Scikit-learn
+- Scikit-learn
 
 
 ## Usage
