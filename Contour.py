@@ -7,7 +7,7 @@ from shapely import geometry as geo
 import numpy as np
 from scipy.interpolate import griddata
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel 
 
 class ContourData():
 
@@ -109,9 +109,9 @@ class ContourData():
             grid = np.array([gfx,gfy]).T
 
             # fit/predict GPR 
-            kernel = DotProduct() + WhiteKernel(noise_level=3.0)
+            kernel = RBF() + ConstantKernel()
             gpr = GaussianProcessRegressor(kernel=kernel,
-                    random_state=0).fit(X, z)
+                    random_state=0,n_restarts_optimizer=10).fit(X, z)
             
             gfz = gpr.predict(grid)
 
