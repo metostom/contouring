@@ -111,7 +111,7 @@ class ContourData():
             # fit/predict GPR 
             kernel = RBF() + ConstantKernel()
             gpr = GaussianProcessRegressor(kernel=kernel,
-                    random_state=0,n_restarts_optimizer=10).fit(X, z)
+                    random_state=0,n_restarts_optimizer=50).fit(X, z)
             
             gfz = gpr.predict(grid)
 
