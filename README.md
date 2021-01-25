@@ -7,7 +7,7 @@ Contouring flat-file time-series Pressure Transducer data and conversion to a we
    - cubic spline (default)
    - linear
  - Triangulation subdivision
- - Gaussian Process Regression (Kringing)
+ - Gaussian Process Regression (Kriging)
    - (RBF + Constant Kernels)
 
 ## Uses
