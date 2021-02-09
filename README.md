@@ -61,6 +61,10 @@ Interpolation methods increase run time significantly. If interpolating, set int
 
 Triangulation subdivision will run fastest, however spatially sparse data may provide undesirable results. 
 
+## Output File Size
+
+File size will increase drastically with increased number of subdivisions and will increase with smaller step sizes. 
+
 ## Output Looks like
 
 ![Alt Text](contourmpl.png)
