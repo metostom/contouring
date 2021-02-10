@@ -181,21 +181,24 @@ class ContourData():
         self.dfTimes['Surfaces'] = surfaces
             
         
-    def contourIntervals(self,zvalues,delta=0.25):
+    def contourIntervals(self,zvalues,delta=0.3):
         '''
         Defines the intervals at which to create contours given the z-values and the interval delta 
-
             Parameters:
                     zvalues (array): A decimal integer
                     delta (float): contour interval delta 
-
             Returns:
                     vals (array): array of values betwee z_max and z_min spaced by delta units
         '''
         
         min_ = np.min(zvalues)
         max_ = np.max(zvalues)
-        vals = np.arange(min_,max_,delta)
+
+        if max_- min_ <= delta:
+            # let matplot determine the intervals to draw if under the delta. 
+            vals = None
+        else:
+            vals = np.arange(min_,max_,delta)
     
         return vals
         
